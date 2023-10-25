@@ -1,4 +1,5 @@
 export default function formatDate(d:Date) {
+    d = new Date(d);
     return `${d.getDate()}/${d.getMonth()}/${d.getFullYear()} ${d.getHours()}:${addZero(d.getMinutes())}`
 }
 

@@ -1,27 +1,20 @@
 <template>
-  <Menubar :model="items" style="background-color: var(--primary-color); color: var(--primary-color-text)">
-    <template #start>
-      <h1>GreenAir</h1>
-    </template>
-  </Menubar>
-  <HomePage style="background-color: ;"/>
+  <div id="base">
+
+    <Menubar style="margin: 6px;">
+      <template #start>
+        <h1>GreenAir</h1>
+      </template>
+    </Menubar>
+
+    <HomePage/>
+
+  </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import HomePage from './vues/HomePage.vue';
 import Menubar from 'primevue/menubar';
-
-var items = ref([
-  {  
-    label: 'Ville',
-    items: [
-      {
-        label: 'Arras'
-      }
-    ]
-  }
-]);
 </script>
 
 <style scoped>
@@ -32,5 +25,11 @@ h1{
   font-size: 22px;
   margin-right: 10px;
   margin-bottom: 5px;
+}
+
+#base{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 </style>

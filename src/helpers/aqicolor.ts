@@ -1,6 +1,6 @@
 export function aqiToColor(aqi:number) {
     if(aqi == 0){
-        return "white";
+        return "black";
     }else if(aqi <= 50){
         return "green";
     }else if(aqi <= 100){

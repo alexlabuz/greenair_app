@@ -17,7 +17,7 @@
         </Column>
         <Column field="date" header="Date">
             <template #body="slotProps">
-                {{ formatDate(slotProps.data.date) }}
+                {{ formatDate(slotProps.data.dateHeure) }}
             </template>
         </Column>
     </DataTable>

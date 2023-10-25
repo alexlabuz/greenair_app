@@ -1,74 +1,185 @@
 <template>
-    <div style="" id="map"></div>
-    <Button>Load map</Button>
-    <Dialog 
-        v-model:visible="dialogParcOpen" 
-        maximizable 
-        modal 
-        :header="openedParc?.nom ?? '' + ' (Historique des mesures)'" 
-        :style="{ width: '60vw' }"
-    >
-        <ParcDialog :parc="openedParc!"/>
-    </Dialog>
+    <div id="baseHome">
+        <div class="barMap">
+            <Dropdown 
+                v-model="selectedCityDropdown" 
+                :options="citys" 
+                loading-icon="pi pi-spin pi-spinner" 
+                :loading="citysIsBusy" 
+                filter 
+                option-label="nom" 
+                style="width: 12em;"
+                placeholder="Choisir ville ..."/>
+            
+            <p v-if="selectedCity">Nombre de capteur : {{ nbCapteur }}</p>
+        </div>
+        
+        <div id="mapContainer" :class="{loading_map: isBusy}">
+            <i class="pi pi-spin pi-spinner centerMap" style="font-size: 2rem; color: black" v-show="isBusy"></i>
+            <p class="centerMap" v-if="!selectedCity">Veuillez selectionner une ville.</p>
+            <div id="map"></div>
+        </div>
+
+        <Dialog 
+            v-model:visible="dialogParcOpen" 
+            maximizable 
+            modal 
+            :header="`${selectedParc?.nom} (Historique des mesures)`" 
+            :style="{ width: '60vw' }"
+        >
+            <ParcDialog :parc="selectedParc!"/>
+        </Dialog>
+    </div>
 </template>
 
 <script setup lang="ts"> 
-import L, { LatLngExpression } from "leaflet";
+import L, { LatLngExpression, Layer } from "leaflet";
 import 'leaflet/dist/leaflet.css';
-import { Ref, onMounted, ref } from "vue";
+import { Ref, computed, onMounted, ref, watch } from "vue";
 import { Ville } from "../models/Ville";
-import { data } from "../data";
-import { plainToClass } from "class-transformer";
-import { aqiToColor } from "../helpers/aqicolor";
-import Button from "primevue/button";
 import Dialog from 'primevue/dialog';
+import Dropdown from "primevue/dropdown";
 import { Parc } from "../models/Parc";
 import ParcDialog from "../components/ParcDialog.vue";
+import { getAllVille, getVilleById } from "../services/VilleRequest";
+import { getParcById } from "../services/ParcRaquest";
 
-var city: Ville = plainToClass(Ville, data);
+// Propriétées ville
+var citysIsBusy: Ref<boolean> = ref(false);
+var citys: Ref<Ville[]> = ref([]);
+var selectedCityDropdown: Ref<Ville | null> = ref(null);
+var selectedCity: Ref<Ville | null> = ref(null);
+
+// Propriétées parc
+var selectedParc: Ref<Parc | null> = ref(null);
 var dialogParcOpen = ref(false);
-var openedParc: Ref<Parc | null> = ref(null);
 
-function launchMap() {
-    //console.log(city);
-    var map = L.map('map', {
+var map: L.Map | null = null;
+var layersMap: Layer[] = [];
+var isBusy: Ref<Boolean> = ref(false);
+
+var nbCapteur = computed(() => selectedCity.value?.parks?.length);
+
+function initialiseMap() {
+    map = L.map('map', {
         scrollWheelZoom: false,
-    }).setView([city.latitude, city.longitude] as LatLngExpression, 13);
+    });
     
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
-
-    city.parcs?.forEach(e => {
-        var circle = L.circle([e.latitude, e.longitude] as LatLngExpression, {
-            color: aqiToColor(e.mesures![0].aqi ?? 0),
-            fillColor: aqiToColor(e.mesures![0].aqi ?? 0),
-            fillOpacity: 0.5,
-            radius: 200,
-            
-        }).addTo(map);
-
-        circle.on("click", () => clickParc(e));
-    });
-
-}
-
-function clickParc(parc: Parc) {
-    openedParc.value = parc;
-    dialogParcOpen.value = true;
 }
 
 onMounted(() => {
-    launchMap();
+    initialiseMap();
+    loadVilles();
+})
+
+function loadParcMap() {
+    if(map === null || selectedCity.value === null) return;
+
+    // Supprime tout les parc affichés sur la carte
+    layersMap.forEach((layer) => {
+        map?.removeLayer(layer);
+    })
+
+    var c = selectedCity.value;
+    console.log(c);
+    map.setView([c.latitude, c.longitude] as LatLngExpression, 13);
+
+    c.parks?.forEach(e => {
+        var circle = L.circle([e.latitude, e.longitude] as LatLngExpression, {
+            //color: aqiToColor(e.mesures![0].aqi ?? 0),
+            //fillColor: aqiToColor(e.mesures![0].aqi ?? 0),
+            fillOpacity: 0.5,
+            radius: 100, 
+        }).addTo(map!);
+
+        circle.on("click", () => openParcDialog(e.id!));
+        layersMap.push(circle);
+    });
+}
+
+async function loadVilles() {
+    citysIsBusy.value = true;
+    var villesData = await getAllVille();
+    citys.value = villesData;
+    citysIsBusy.value = false;
+}
+
+async function loadVille(id: number) {
+    isBusy.value = true;
+    var villeData = await getVilleById(id.toString());
+    selectedCity.value = villeData;
+    loadParcMap();
+    isBusy.value = false;
+}
+
+async function loadParc(id: number) {
+    isBusy.value = true;
+    var parcData = await getParcById(id.toString());
+    parcData.mesures?.reverse();
+    selectedParc.value = parcData;
+    isBusy.value = false;
+}
+
+async function openParcDialog(idParc: number) {
+    await loadParc(idParc);
+    dialogParcOpen.value = true;
+}
+
+watch(selectedCityDropdown, async(newQ, oldQ) => {
+    if(newQ === oldQ || !newQ) return;
+    console.log(selectedCity);
+    loadVille(newQ.id ?? 1);
 })
 
 </script>
 
 <style scoped>
-#map{
-    z-index: 0;
-    width: 800px; 
-    height: 600px;
+#mapContainer{
+    width: 100% -1px; 
+    height: 100%;
+    margin: 8px;
+    animation: 0.7s;
+}
+
+#mapContainer .centerMap{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 401;
+}
+
+#mapContainer #map{
+    width: 100%; 
+    height: 100%;
+    border-radius: 5px;
+}
+
+.loading_map{
+    filter: brightness(0.4);
+}
+
+#baseHome{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+}
+
+.barMap{
+    margin: 5px;
+    border-radius: 5px;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    gap: 1em;
+}
+
+.barMap p {
+    margin: 0;
 }
 </style>

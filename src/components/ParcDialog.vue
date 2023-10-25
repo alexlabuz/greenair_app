@@ -1,15 +1,46 @@
 <template>
-    <ListBox></ListBox>
+    <DataTable :value="parc?.mesures" size="large">
+        <Column header="AQI">
+            <template #body="slotProps">
+                <Badge :color="aqiToColor(slotProps.data.aqi)">{{ slotProps.data.aqi}}</Badge>
+            </template>
+        </Column>
+        <Column header="Température">
+            <template #body="slotProps">
+                {{ slotProps.data.temperature }} °C
+            </template>
+        </Column>
+        <Column field="humidite" header="Humidité">
+            <template #body="slotProps">
+                {{ slotProps.data.humidite}} %
+            </template>
+        </Column>
+        <Column field="date" header="Date">
+            <template #body="slotProps">
+                {{ formatDate(slotProps.data.date) }}
+            </template>
+        </Column>
+    </DataTable>
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref } from 'vue';
 import { Parc } from '../models/Parc';
-import ListBox from "primevue/listbox";
+import formatDate  from "../helpers/dateFormater";
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import Badge from '../components/Badge.vue';
+import { aqiToColor } from '../helpers/aqicolor';
 
 
-defineProps({
-    partyPlayer: Object as () => Parc
+//var e = ref(["k", "d", "d"]);
+
+var props = defineProps({
+    parc: Object as () => Parc
 });
 
+onMounted(() => {
+    console.log(props.parc);
+})
 
 </script>

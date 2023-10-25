@@ -1,9 +1,14 @@
 <template>
-    <h1>GreenAir</h1>
-    <div style="width: 800px; height: 600px;" id="map"></div>
+    <div style="" id="map"></div>
     <Button>Load map</Button>
-    <Dialog v-model:visible="dialogParcOpen" maximizable modal :header="openedParc?.nom ?? '' + ' (Historique des mesures)'" :style="{ width: '50vw' }">
-        <ParcDialog/>
+    <Dialog 
+        v-model:visible="dialogParcOpen" 
+        maximizable 
+        modal 
+        :header="openedParc?.nom ?? '' + ' (Historique des mesures)'" 
+        :style="{ width: '60vw' }"
+    >
+        <ParcDialog :parc="openedParc!"/>
     </Dialog>
 </template>
 
@@ -25,7 +30,7 @@ var dialogParcOpen = ref(false);
 var openedParc: Ref<Parc | null> = ref(null);
 
 function launchMap() {
-    console.log(city);
+    //console.log(city);
     var map = L.map('map', {
         scrollWheelZoom: false,
     }).setView([city.latitude, city.longitude] as LatLngExpression, 13);
@@ -61,4 +66,9 @@ onMounted(() => {
 </script>
 
 <style scoped>
+#map{
+    z-index: -1;
+    width: 800px; 
+    height: 600px;
+}
 </style>

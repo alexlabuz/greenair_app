@@ -1,8 +1,8 @@
 import { createApp } from 'vue'
-//import './style.css'
+import './assets/style.css'
 import App from './App.vue'
 import PrimeVue from "primevue/config";
-import 'primevue/resources/themes/fluent-light/theme.css'
+import 'primevue/resources/themes/saga-green/theme.css'
 
 
 const app = createApp(App)

@@ -12,7 +12,19 @@ export var data = {
                     aqi: 152.2,
                     temperature: 14.5,
                     humidite: 78,
-                    date: undefined,
+                    date: new Date(2023, 9, 25, 11, 5)
+                },
+                {
+                    aqi: 114.2,
+                    temperature: 14.5,
+                    humidite: 78,
+                    date: new Date(2023, 9, 25, 11, 5)
+                },
+                {
+                    aqi: 85.5,
+                    temperature: 14.5,
+                    humidite: 78,
+                    date: new Date(2023, 9, 25, 11, 5)
                 }
             ]
         },
@@ -25,7 +37,19 @@ export var data = {
                     aqi: 145.2,
                     temperature: 14.5,
                     humidite: 78,
-                    date: undefined,
+                    date: new Date(2023, 9, 25, 11, 5)
+                },
+                {
+                    aqi: 152.2,
+                    temperature: 14.5,
+                    humidite: 78,
+                    date: new Date(2023, 9, 25, 11, 5)
+                },
+                {
+                    aqi: 152.2,
+                    temperature: 14.5,
+                    humidite: 78,
+                    date: new Date(2023, 9, 25, 11, 5)
                 }
             ]
         },
@@ -38,7 +62,19 @@ export var data = {
                     aqi: 14.2,
                     temperature: 14.5,
                     humidite: 78,
-                    date: undefined,
+                    date: new Date(2023, 9, 25, 11, 5)
+                },
+                {
+                    aqi: 152.2,
+                    temperature: 14.5,
+                    humidite: 78,
+                    date: new Date(2023, 9, 25, 11, 5)
+                },
+                {
+                    aqi: 152.2,
+                    temperature: 14.5,
+                    humidite: 78,
+                    date: new Date(2023, 9, 25, 11, 5)
                 }
             ]
         }

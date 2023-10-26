@@ -3,7 +3,10 @@
 
     <Menubar style="margin: 6px;">
       <template #start>
-        <h1>GreenAir</h1>
+        <div style="display: flex;gap: 1em;align-items: center;">
+          <img src="./assets/favicon-32x32.png"/>
+          <h1>GreenAir</h1>
+        </div>
       </template>
     </Menubar>
 

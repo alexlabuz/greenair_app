@@ -9,6 +9,7 @@ export class Parc {
 
     public ville: Ville | undefined;
     public mesures: Mesure[] | undefined;
+    public mesure: Mesure | undefined;
 
     constructor() {
         

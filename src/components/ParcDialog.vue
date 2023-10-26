@@ -1,4 +1,5 @@
 <template>
+    <Button @click="clickRefresh" icon="pi pi-refresh" label="Rafraichir"/>
     <DataTable :value="parc?.mesures" size="large">
         <Column header="AQI">
             <template #body="slotProps">
@@ -31,16 +32,19 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Badge from '../components/Badge.vue';
 import { aqiToColor } from '../helpers/aqicolor';
-
-
-//var e = ref(["k", "d", "d"]);
+import Button from 'primevue/button';
 
 var props = defineProps({
     parc: Object as () => Parc
 });
 
+const emit = defineEmits(['refresh']);
+
+function clickRefresh() {
+    emit('refresh');
+}
+
 onMounted(() => {
     console.log(props.parc);
 })
-
 </script>

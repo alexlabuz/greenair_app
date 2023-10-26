@@ -12,6 +12,8 @@
                 placeholder="Choisir ville ..."/>
             
             <p v-if="selectedCity">Nombre de capteur : {{ nbCapteur }}</p>
+
+            <Button v-if="selectedCity" @click="loadVille(selectedCity?.id ?? 1)" icon="pi pi-refresh" label="Rafraichir"/>
         </div>
         
         <div id="mapContainer" :class="{loading_map: isBusy}">
@@ -27,7 +29,7 @@
             :header="`${selectedParc?.nom} (Historique des mesures)`" 
             :style="{ width: '60vw' }"
         >
-            <ParcDialog :parc="selectedParc!"/>
+            <ParcDialog :parc="selectedParc!" @refresh="loadParc(selectedParc?.id ?? 1)"/>
         </Dialog>
     </div>
 </template>
@@ -43,6 +45,8 @@ import { Parc } from "../models/Parc";
 import ParcDialog from "../components/ParcDialog.vue";
 import { getAllVille, getVilleById } from "../services/VilleRequest";
 import { getParcById } from "../services/ParcRaquest";
+import { aqiToColor } from "../helpers/aqicolor";
+import Button from "primevue/button";
 
 // Propriétées ville
 var citysIsBusy: Ref<boolean> = ref(false);
@@ -79,7 +83,7 @@ onMounted(() => {
 function loadParcMap() {
     if(map === null || selectedCity.value === null) return;
 
-    // Supprime tout les parc affichés sur la carte
+    // Supprime tout les parcs affichés sur la carte
     layersMap.forEach((layer) => {
         map?.removeLayer(layer);
     })
@@ -90,8 +94,8 @@ function loadParcMap() {
 
     c.parks?.forEach(e => {
         var circle = L.circle([e.latitude, e.longitude] as LatLngExpression, {
-            //color: aqiToColor(e.mesures![0].aqi ?? 0),
-            //fillColor: aqiToColor(e.mesures![0].aqi ?? 0),
+            color: aqiToColor((e.mesure) ? e.mesure?.aqi! : 0),
+            fillColor: aqiToColor((e.mesure) ? e.mesure?.aqi! : 0),
             fillOpacity: 0.5,
             radius: 100, 
         }).addTo(map!);

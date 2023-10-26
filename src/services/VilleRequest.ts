@@ -3,7 +3,7 @@ import { baseUrl } from "../main";
 import { Ville } from "../models/Ville";
 
 export async function getAllVille(): Promise<Ville[]> {
-    const response = await fetch(`${baseUrl}/ville`);
+    const response = await fetch(`${baseUrl}/ville?page=1&pageSize=20`);
     const data = (await response.json()).items;
     return data.map((i: any) => plainToClass(Ville, i));
 }

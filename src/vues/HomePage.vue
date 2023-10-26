@@ -123,7 +123,6 @@ async function loadVille(id: number) {
 async function loadParc(id: number) {
     isBusy.value = true;
     var parcData = await getParcById(id.toString());
-    parcData.mesures?.reverse();
     selectedParc.value = parcData;
     isBusy.value = false;
 }

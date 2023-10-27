@@ -4,7 +4,7 @@ export function aqiToColor(aqi:number) {
     }else if(aqi <= 50){
         return "green";
     }else if(aqi <= 100){
-        return "yellow";
+        return "#FEFF00";
     }else if(aqi <= 150){
         return "orange";
     }else{
